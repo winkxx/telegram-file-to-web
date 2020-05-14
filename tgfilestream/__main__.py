@@ -21,7 +21,7 @@ from telethon import functions
 
 from .telegram import client, transfer
 from .web_routes import routes
-from .config import host, port, public_url
+from .config import host, port, public_url, allowed_user
 from .log import log
 
 server = web.Application()
@@ -62,6 +62,7 @@ except Exception:
 log.info("Initialization complete")
 log.debug(f"Listening at http://{host}:{port}")
 log.debug(f"Public URL prefix is {public_url}")
+log.debug(f"allowed user ids {allowed_user}")
 
 try:
     loop.run_forever()

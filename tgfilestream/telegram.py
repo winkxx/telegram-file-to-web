@@ -33,7 +33,7 @@ def get_media_meta(media):
             log.debug('media.photo true')
             for a in media.photo.sizes:
                 log.debug(a)
-                if a.type == 'x':
+                if a.type == 'm':
                     return True, True, a.size
         if hasattr(media, 'document'):
             log.debug('media.document true')
