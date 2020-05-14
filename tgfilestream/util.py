@@ -72,3 +72,16 @@ def get_requester_ip(req: web.Request) -> str:
     peername = req.transport.get_extra_info('peername')
     if peername is not None:
         return peername[0]
+
+
+def get_media_meta(media: events.NewMessage.Event.MessageMedia) -> (bool, bool, int, str):
+    try:
+        if hasattr(media, 'photo'):
+            for a in media.photo.sizes:
+                if a.type == 'm':
+                    return True, True, int(a.size), ''
+        if hasattr(media, 'document'):
+            return True, str(media.document.mime_type).split("/")[0] == 'image', int(media.document.size), ''
+        return False, False, 0, ''
+    except Exception as ep:
+        return False, False, 0, str(ep)

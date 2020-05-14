@@ -59,3 +59,7 @@ except ValueError:
 
 allowed_user = os.environ.get('ALLOW_USER_IDS', '').split(',')
 max_file_size = int(os.environ.get('MAX_FILE_SIZE', str(1024 * 1024 * 20)))
+try:
+    admin_id = int(os.environ.get('ADMIN_ID', 0))
+except ValueError:
+    admin_id = 0
