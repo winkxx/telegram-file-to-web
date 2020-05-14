@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.'
 import logging
+from typing import Any, Union, Tuple
 
 from telethon import TelegramClient, events
 
@@ -27,39 +28,39 @@ client = TelegramClient(session_name, api_id, api_hash)
 transfer = ParallelTransferrer(client)
 
 
-def get_media_meta(media):
+def get_media_meta(media: events.NewMessage.Event.MessageMedia) -> (bool, bool, int, str):
     try:
         if hasattr(media, 'photo'):
             log.debug('media.photo true')
             for a in media.photo.sizes:
                 log.debug(a)
                 if a.type == 'm':
-                    return True, True, a.size
+                    return True, True, int(a.size), ''
         if hasattr(media, 'document'):
             log.debug('media.document true')
             log.info(media.document.mime_type)
-            return True, str(media.document.mime_type).split("/")[0] == "image", media.document.size
-        return False, False, 0
+            return True, str(media.document.mime_type).split("/")[0] == 'image', int(media.document.size), ''
+        return False, False, 0, ''
     except Exception as ep:
         log.error(ep)
-        return False, False, False, str(ep)
+        return False, False, 0, str(ep)
 
 
 @client.on(events.NewMessage)
 async def handle_message(evt: events.NewMessage.Event) -> None:
     if str(evt.from_id) not in allowed_user:
-        log.info(f"user {evt.from_id} not allowed to use this bot")
+        log.info(f'user {evt.from_id} not allowed to use this bot')
         return
     try:
         ret = get_media_meta(evt.media)
         if not (ret[0] and ret[1] and ret[2] <= max_file_size):
-            log.info(f"{ret}")
+            log.info(f'{ret}')
             return
     except Exception as exp:
         pass
     if not evt.is_private or not evt.file:
         return
     url = public_url / str(pack_id(evt)) / get_file_name(evt)
-    await evt.reply(f"Link to download file: [{url}]({url})")
-    log.info(f"Replied with link for {evt.id} to {evt.from_id} in {evt.chat_id}")
-    log.debug(f"Link to {evt.id} in {evt.chat_id}: {url}")
+    await evt.reply(f'[{url}]({url})')
+    # log.info(f'Replied with link for {evt.id} to {evt.from_id} in {evt.chat_id}')
+    log.debug(f'Link to {evt.id} in {evt.chat_id}: {url}')

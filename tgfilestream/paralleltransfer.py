@@ -37,8 +37,8 @@ TypeLocation = Union[Document, InputDocumentFileLocation, InputPeerPhotoFileLoca
 root_log = logging.getLogger(__name__)
 
 if connection_limit > 25:
-    root_log.warning("The connection limit should not be set above 25 to avoid"
-                     " infinite disconnect/reconnect loops")
+    root_log.warning('The connection limit should not be set above 25 to avoid'
+                     ' infinite disconnect/reconnect loops')
 
 
 @dataclass
@@ -62,7 +62,7 @@ class DCConnectionManager:
     _list_lock: asyncio.Lock
 
     def __init__(self, client: TelegramClient, dc_id: int) -> None:
-        self.log = root_log.getChild(f"dc{dc_id}")
+        self.log = root_log.getChild(f'dc{dc_id}')
         self.client = client
         self.dc_id = dc_id
         self.auth_key = None
@@ -76,7 +76,7 @@ class DCConnectionManager:
             self.dc = await self.client._get_dc(self.dc_id)
         sender = MTProtoSender(self.auth_key, self.loop, loggers=self.client._log)
         index = len(self.connections) + 1
-        conn = Connection(sender=sender, log=self.log.getChild(f"conn{index}"), lock=asyncio.Lock())
+        conn = Connection(sender=sender, log=self.log.getChild(f'conn{index}'), lock=asyncio.Lock())
         self.connections.append(conn)
         async with conn.lock:
             conn.log.info("Connecting...")
@@ -89,12 +89,12 @@ class DCConnectionManager:
             return conn
 
     async def _export_auth_key(self, conn: Connection) -> None:
-        self.log.info(f"Exporting auth to DC {self.dc.id}"
-                      f" (main client is in {self.client.session.dc_id})")
+        self.log.info(f'Exporting auth to DC {self.dc.id}'
+                      f' (main client is in {self.client.session.dc_id})')
         try:
             auth = await self.client(ExportAuthorizationRequest(self.dc.id))
         except DcIdInvalidError:
-            self.log.debug("Got DcIdInvalidError")
+            self.log.debug('Got DcIdInvalidError')
             self.auth_key = self.client.session.auth_key
             conn.sender.auth_key = self.auth_key
             return
@@ -173,14 +173,14 @@ class ParallelTransferrer:
                         yield result.bytes[:last_part_cut]
                     else:
                         yield result.bytes
-                    log.debug(f"Part {part}/{last_part} (total {part_count}) downloaded")
+                    log.debug(f'Part {part}/{last_part} (total {part_count}) downloaded')
                     part += 1
-                log.debug("Parallel download finished")
+                log.debug('Parallel download finished')
         except (GeneratorExit, StopAsyncIteration, asyncio.CancelledError):
-            log.debug("Parallel download interrupted")
+            log.debug('Parallel download interrupted')
             raise
         except Exception:
-            log.debug("Parallel download errored", exc_info=True)
+            log.debug('Parallel download errored', exc_info=True)
 
     def download(self, file: TypeLocation, file_size: int, offset: int, limit: int
                  ) -> AsyncGenerator[bytes, None]:
@@ -191,8 +191,8 @@ class ParallelTransferrer:
         last_part_cut = part_size - (limit % part_size)
         last_part = math.ceil(limit / part_size)
         part_count = math.ceil(file_size / part_size)
-        self.log.debug(f"Starting parallel download: chunks {first_part}-{last_part}"
-                       f" of {part_count} {location!s}")
+        self.log.debug(f'Starting parallel download: chunks {first_part}-{last_part}'
+                       f' of {part_count} {location!s}')
         request = GetFileRequest(location, offset=first_part * part_size, limit=part_size)
 
         return self._int_download(request, first_part, last_part, part_count, part_size, dc_id,

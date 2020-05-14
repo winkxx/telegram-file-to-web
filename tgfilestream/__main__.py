@@ -56,18 +56,18 @@ async def stop() -> None:
 try:
     loop.run_until_complete(start())
 except Exception:
-    log.fatal("Failed to initialize", exc_info=True)
+    log.fatal('Failed to initialize', exc_info=True)
     sys.exit(2)
 
-log.info("Initialization complete")
-log.debug(f"Listening at http://{host}:{port}")
-log.debug(f"Public URL prefix is {public_url}")
-log.debug(f"allowed user ids {allowed_user}")
+log.info('Initialization complete')
+log.debug(f'Listening at http://{host}:{port}')
+log.debug(f'Public URL prefix is {public_url}')
+log.debug(f'allowed user ids {allowed_user}')
 
 try:
     loop.run_forever()
 except KeyboardInterrupt:
     loop.run_until_complete(stop())
 except Exception:
-    log.fatal("Fatal error in event loop", exc_info=True)
+    log.fatal('Fatal error in event loop', exc_info=True)
     sys.exit(3)

@@ -59,14 +59,14 @@ def unpack_id(file_id: int) -> Tuple[TypeInputPeer, int]:
 def get_file_name(message: Union[Message, events.NewMessage.Event]) -> str:
     if message.file.name:
         return message.file.name
-    ext = message.file.ext or ""
-    return f"{message.date.strftime('%Y-%m-%d_%H_%M_%S')}{ext}"
+    ext = message.file.ext or ''
+    return f'{message.date.strftime("%Y-%m-%d_%H_%M_%S")}{ext}'
 
 
 def get_requester_ip(req: web.Request) -> str:
     if trust_headers:
         try:
-            return req.headers["X-Forwarded-For"]
+            return req.headers['X-Forwarded-For']
         except KeyError:
             pass
     peername = req.transport.get_extra_info('peername')
