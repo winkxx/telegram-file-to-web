@@ -57,5 +57,5 @@ except ValueError:
     print("Please make sure the CONNECTION_LIMIT environment variable is an integer")
     sys.exit(1)
 
-allowed_user = [79113659]
-max_file_size = 1024 * 1024 * 20  # 20MB
+allowed_user = os.environ.get('ALLOW_USER_IDS', '').split(",")
+max_file_size = int(os.environ.get("MAX_FILE_SIZE", str(1024 * 1024 * 20)))

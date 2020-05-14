@@ -33,9 +33,9 @@ async def handle_message(evt: events.NewMessage.Event) -> None:
         log.info(f"user {evt.from_id} not allowed to use this bot")
         return
     try:
-        log.debug(evt.media)
+        print(evt.media)
     except:
-        log.debug(evt)
+        pass
     if not evt.is_private or not evt.file:
         return
     url = public_url / str(pack_id(evt)) / get_file_name(evt)
