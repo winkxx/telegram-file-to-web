@@ -60,7 +60,7 @@ def get_file_name(message: Union[Message, events.NewMessage.Event]) -> str:
     if message.file.name:
         return message.file.name
     ext = message.file.ext or ""
-    return f"{message.date.strftime('%Y-%m-%d_%H:%M:%S')}{ext}"
+    return f"{message.date.strftime('%Y-%m-%d_%H_%M_%S')}{ext}"
 
 
 def get_requester_ip(req: web.Request) -> str:

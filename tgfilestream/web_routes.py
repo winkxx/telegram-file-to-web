@@ -80,6 +80,6 @@ async def handle_request(req: web.Request, head: bool = False) -> web.Response:
                             "Content-Type": message.file.mime_type,
                             "Content-Range": f"bytes {offset}-{size}/{size}",
                             "Content-Length": str(limit - offset),
-                            "Content-Disposition": f'attachment; filename="{file_name}"',
+                            #"Content-Disposition": f'attachment; filename="{file_name}"',
                             "Accept-Ranges": "bytes",
                         })
