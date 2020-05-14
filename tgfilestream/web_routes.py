@@ -54,6 +54,7 @@ def decrement_counter(ip: str) -> None:
 async def handle_request(req: web.Request, head: bool = False) -> web.Response:
     file_name = req.match_info['name']
     file_id = int(req.match_info['id'])
+    dl = 'dl' in req.query.keys()
     peer, msg_id = unpack_id(file_id)
     if not peer or not msg_id:
         return web.Response(status=404, text='404: Not Found')
@@ -74,12 +75,19 @@ async def handle_request(req: web.Request, head: bool = False) -> web.Response:
         body = transfer.download(message.media, file_size=size, offset=offset, limit=limit)
     else:
         body = None
+
+    h = {
+        'Content-Type': message.file.mime_type,
+        'Content-Range': f'bytes {offset}-{size}/{size}',
+        'Content-Length': str(limit - offset),
+        'Access-Control-Allow-Origin': '*',
+        'content-security-policy': 'script-src "self" "unsafe-inline" "unsafe-eval"',
+        # 'Content-Disposition': f'attachment; filename='{file_name}'',
+        'Accept-Ranges': 'bytes',
+    }
+    if dl:
+        h['Content-Disposition'] = f'attachment; filename="{file_name}"'
+
     return web.Response(status=206 if offset else 200,
                         body=body,
-                        headers={
-                            'Content-Type': message.file.mime_type,
-                            'Content-Range': f'bytes {offset}-{size}/{size}',
-                            'Content-Length': str(limit - offset),
-                            # 'Content-Disposition': f'attachment; filename='{file_name}'',
-                            'Accept-Ranges': 'bytes',
-                        })
+                        headers=h)

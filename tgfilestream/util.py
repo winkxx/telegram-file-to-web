@@ -74,7 +74,7 @@ def get_requester_ip(req: web.Request) -> str:
         return peername[0]
 
 
-def get_media_meta(media: events.NewMessage.Event.MessageMedia) -> (bool, bool, int, str):
+def get_media_meta(media) -> (bool, bool, int, str):
     try:
         if hasattr(media, 'photo'):
             for a in media.photo.sizes:
