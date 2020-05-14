@@ -18,7 +18,7 @@ import logging
 from telethon import TelegramClient, events
 
 from .paralleltransfer import ParallelTransferrer
-from .config import session_name, api_id, api_hash, public_url, allowed_user
+from .config import session_name, api_id, api_hash, public_url, allowed_user, max_file_size
 from .util import pack_id, get_file_name
 
 log = logging.getLogger(__name__)
@@ -27,14 +27,35 @@ client = TelegramClient(session_name, api_id, api_hash)
 transfer = ParallelTransferrer(client)
 
 
+def get_media_meta(media):
+    try:
+        if hasattr(media, 'photo'):
+            log.debug('media.photo true')
+            for a in media.photo.sizes:
+                log.debug(a)
+                if a.type == 'x':
+                    return True, True, a.size
+        if hasattr(media, 'document'):
+            log.debug('media.document true')
+            log.info(media.document.mime_type)
+            return True, str(media.document.mime_type).split("/")[0] == "image", media.document.size
+        return False, False, 0
+    except Exception as ep:
+        log.error(ep)
+        return False, False, False, str(ep)
+
+
 @client.on(events.NewMessage)
 async def handle_message(evt: events.NewMessage.Event) -> None:
-    if evt.from_id not in allowed_user:
+    if str(evt.from_id) not in allowed_user:
         log.info(f"user {evt.from_id} not allowed to use this bot")
         return
     try:
-        print(evt.media)
-    except:
+        ret = get_media_meta(evt.media)
+        if not (ret[0] and ret[1] and ret[2] <= max_file_size):
+            log.info(f"{ret}")
+            return
+    except Exception as exp:
         pass
     if not evt.is_private or not evt.file:
         return
