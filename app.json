@@ -1,44 +1,48 @@
 {
-  "name": "TGFileStream - Telegram Bot 🤖",
-  "description": "This is telegram Bot uses Telethon & aiohttp library which asyncronously download files from telegram.",
+  "name": "Telegram Image Served by Web",
+  "description": "web形式下载telegram图片",
   "keywords": [
     "Telethon",
-    "best",
-    "Direct Download",
-    "URL Downloader",
-    "video Downloader",
     "free",
     "plugin",
-    "modular",
+    "Image",
     "productivity",
     "Telegram api"
   ],
-  "repository": "https://github.com/kuyagic/tgfilestream.git",
+  "repository": "https://github.com/kuyagic/tgfilestream",
   "success_url": "https://github.com/kuyagic/tgfilestream",
   "website": "https://github.com/kuyagic/tgfilestream",
   "env": {
-    "TG_API_ID": {
-      "description": "This is telegram App API_ID - Get from my.telegram.org",
-      "value": ""
-    },
-    "TG_API_HASH": {
-      "description": "This is telegram App API_HASH - Get from my.telegram.org",
-      "value": ""
-    },
-    "TG_BOT_TOKEN": {
-      "description": "This is telegram Bot Token - get from BotFathers",
-      "value": ""
-    },
-    "Heroku_App_URL": {
-      "description": "This is your Heroku app URL. For example : your Heroku app name is tgfilestream - Then URL is -> https://tgfilestream.herokuapp.com ",
+    "ADMIN_ID": {
+      "description": "管理员ID,不受任何限制私聊",
       "value": ""
     },
     "ALLOW_USER_IDS": {
-      "description": "tg user id allowed, [,] split",
+      "description": "允许bot互动的群组,频道和用户ID 逗号分隔",
       "value": ""
     },
-    "ADMIN_ID": {
-      "description": "tg user id has no restriction",
+    "LINK_PREFIX": {
+      "description": "下载链接前缀一般是 <name>.herokuapp.com ",
+      "value": ""
+    },
+    "PRIVATE_ONLY": {
+      "description": "只响应私聊消息",
+      "value": ""
+    },
+    "MAX_FILE_SIZE": {
+      "description": "文件最大尺寸,单位 字节",
+      "value": ""
+    },
+    "TG_API_ID": {
+      "description": "访问 my.telegram.org 获取此数据",
+      "value": ""
+    },
+    "TG_API_HASH": {
+      "description": "访问 my.telegram.org 获取此数据",
+      "value": ""
+    },
+    "TG_BOT_TOKEN": {
+      "description": "机器人ID, 从 @botfather 创建并获取",
       "value": ""
     }
   }
