@@ -17,10 +17,14 @@ from typing import Dict, cast
 from collections import defaultdict
 import logging
 
+
 from telethon.tl.custom import Message
 from aiohttp import web
 
-from .util import unpack_id, get_file_name, get_requester_ip
+from telethon.tl.types import TypeInputPeer, InputPeerChannel, InputPeerChat, InputPeerUser
+
+from .util import get_file_name, get_requester_ip
+from .string_encoder import StringCoder
 from .config import request_limit
 from .telegram import client, transfer
 
@@ -29,12 +33,12 @@ routes = web.RouteTableDef()
 ongoing_requests: Dict[str, int] = defaultdict(lambda: 0)
 
 
-@routes.head(r'/{id:\d+}/{name}')
+@routes.head(r'/{id:\S+}/{name}')
 async def handle_head_request(req: web.Request) -> web.Response:
     return await handle_request(req, head=True)
 
 
-@routes.get(r'/{id:\d+}/{name}')
+@routes.get(r'/{id:\S+}/{name}')
 async def handle_get_request(req: web.Request) -> web.Response:
     return await handle_request(req, head=False)
 
@@ -55,7 +59,15 @@ async def handle_request(req: web.Request, head: bool = False) -> web.Response:
     file_name = req.match_info['name']
     file_id = int(req.match_info['id'])
     dl = 'dl' in req.query.keys()
-    peer, msg_id = unpack_id(file_id)
+
+    chat_id, msg_id,is_group,is_channel = StringCoder.decode(file_id)
+    if is_channel:
+        peer = InputPeerChannel(channel_id=chat_id, access_hash=0)
+    elif is_group:
+        peer = InputPeerChat(chat_id=chat_id)
+    else:
+        peer = InputPeerUser(user_id=chat_id, access_hash=0)
+
     if not peer or not msg_id:
         ret = ' peer or msg_id None,file_id=%s,msg_id=%s' % (file_id, msg_id)
         return web.Response(status=404, text=ret)

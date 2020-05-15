@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from typing import Tuple, Union
-
 from telethon import events
 from telethon.tl.custom import Message
 from telethon.tl.types import TypeInputPeer, InputPeerChannel, InputPeerChat, InputPeerUser
@@ -85,3 +84,4 @@ def get_media_meta(media) -> (bool, bool, int, str):
         return False, False, 0, ''
     except Exception as ep:
         return False, False, 0, str(ep)
+
