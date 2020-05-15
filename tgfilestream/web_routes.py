@@ -62,9 +62,9 @@ async def handle_request(req: web.Request, head: bool = False) -> web.Response:
         chat_id, msg_id, is_group, is_channel = StringCoder.decode(file_id).split('|')
     except:
         return web.Response(status=404, text='not found')
-    if bool(is_channel):
+    if bool(int(is_channel)):
         peer = InputPeerChannel(channel_id=int(chat_id), access_hash=0)
-    elif bool(is_group):
+    elif bool(int(is_group)):
         peer = InputPeerChat(chat_id=int(chat_id))
     else:
         peer = InputPeerUser(user_id=int(chat_id), access_hash=0)
