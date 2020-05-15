@@ -17,7 +17,6 @@ from typing import Dict, cast
 from collections import defaultdict
 import logging
 
-
 from telethon.tl.custom import Message
 from aiohttp import web
 
@@ -57,10 +56,10 @@ def decrement_counter(ip: str) -> None:
 
 async def handle_request(req: web.Request, head: bool = False) -> web.Response:
     file_name = req.match_info['name']
-    file_id = int(req.match_info['id'])
+    file_id = str(req.match_info['id'])
     dl = 'dl' in req.query.keys()
 
-    chat_id, msg_id,is_group,is_channel = StringCoder.decode(file_id)
+    chat_id, msg_id, is_group, is_channel = StringCoder.decode(file_id)
     if is_channel:
         peer = InputPeerChannel(channel_id=chat_id, access_hash=0)
     elif is_group:

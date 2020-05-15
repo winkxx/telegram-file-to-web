@@ -1,5 +1,5 @@
-
-import os, base64
+import base64
+import os
 
 if os.name != 'nt':
     import Crypto.Cipher.ARC4
