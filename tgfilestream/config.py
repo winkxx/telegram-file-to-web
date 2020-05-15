@@ -63,3 +63,5 @@ try:
     admin_id = int(os.environ.get('ADMIN_ID', 0))
 except ValueError:
     admin_id = 0
+
+print(api_id,api_hash,bot_token,allowed_user)
