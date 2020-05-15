@@ -1,0 +1,1 @@
+web: python3 tgfilestream/start.py

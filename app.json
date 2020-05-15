@@ -1,0 +1,45 @@
+{
+  "name": "TGFileStream - Telegram Bot 🤖",
+  "description": "This is telegram Bot uses Telethon & aiohttp library which asyncronously download files from telegram.",
+  "keywords": [
+    "Telethon",
+    "best",
+    "Direct Download",
+    "URL Downloader",
+    "video Downloader",
+    "free",
+    "plugin",
+    "modular",
+    "productivity",
+    "Telegram api"
+  ],
+  "repository": "https://github.com/kuyagic/tgfilestream.git",
+  "success_url": "https://github.com/kuyagic/tgfilestream",
+  "website": "https://github.com/kuyagic/tgfilestream",
+  "env": {
+    "TG_API_ID": {
+      "description": "This is telegram App API_ID - Get from my.telegram.org",
+      "value": ""
+    },
+    "TG_API_HASH": {
+      "description": "This is telegram App API_HASH - Get from my.telegram.org",
+      "value": ""
+    },
+    "TG_BOT_TOKEN": {
+      "description": "This is telegram Bot Token - get from BotFathers",
+      "value": ""
+    },
+    "Heroku_App_URL": {
+      "description": "This is your Heroku app URL. For example : your Heroku app name is tgfilestream - Then URL is -> https://tgfilestream.herokuapp.com ",
+      "value": ""
+    },
+    "ALLOW_USER_IDS": {
+      "description": "tg user id allowed, [,] split",
+      "value": ""
+    },
+    "ADMIN_ID": {
+      "description": "tg user id has no restriction",
+      "value": ""
+    }
+  }
+}
