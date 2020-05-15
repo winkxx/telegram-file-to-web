@@ -1,8 +1,12 @@
+rm -rf app
+git clone https://github.com/kuyagic/tgfilestream app
+pip install -r app/requirements.txt
 TG_API_ID=<TG_APP_ID> \
 TG_API_HASH=<TG_APP_KEY> \
+TG_BOT_TOKEN=<BOT_TOKEN> \
 HOST=0.0.0.0 \
 PORT=19999 \
 PUBLIC_URL="https://<DOMAIN>" \
 ALLOW_USER_IDS="<TG_USER_ID>,<TG_USER_ID>" \
 ADMIN_ID="<NON_RESTRICT_ID>" \
-python3 -m tgfilestream
+python3 app/start.py

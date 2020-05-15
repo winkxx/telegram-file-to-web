@@ -19,8 +19,8 @@ from typing import Any, Union, Tuple
 from telethon import TelegramClient, events
 from .string_encoder import StringCoder
 from .paralleltransfer import ParallelTransferrer
-from .config import bot_token, api_id, api_hash, public_url, allowed_user, max_file_size, admin_id, session
-from .util import pack_id, get_file_name, get_media_meta
+from .config import link_prefix, api_id, api_hash, public_url, allowed_user, max_file_size, admin_id, session
+from .util import get_file_name, get_media_meta
 
 log = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ async def handle_message(evt: events.NewMessage.Event) -> None:
             middle_x = StringCoder.encode(f"{evt.chat_id}|{evt.id}|{1 if evt.is_group else 0}|{1 if evt.is_channel else 0}")
             log.debug(f"{evt.chat_id}|{evt.id}|{1 if evt.is_group else 0}|{1 if evt.is_channel else 0}")
             # url = public_url / str(pack_id(evt)) / get_file_name(evt)
-            url = public_url / middle_x / get_file_name(evt)
+            url = link_prefix / middle_x / get_file_name(evt)
             await evt.reply(f'[{url}]({url})')
             log.debug(f'Link to {evt.id} in {evt.chat_id}: {url}')
         else:
@@ -51,7 +51,7 @@ async def handle_message(evt: events.NewMessage.Event) -> None:
                 middle_x = StringCoder.encode(f"{evt.chat_id}|{evt.id}|{1 if evt.is_group else 0}|{1 if evt.is_channel else 0}")
                 log.debug(f"{evt.chat_id}|{evt.id}|{1 if evt.is_group else 0}|{1 if evt.is_channel else 0}")
                 # url = public_url / str(pack_id(evt)) / get_file_name(evt)
-                url = public_url / middle_x / get_file_name(evt)
+                url = link_prefix / middle_x / get_file_name(evt)
                 await evt.reply(f'[{url}]({url})')
                 log.debug(f'Link to {evt.id} in {evt.chat_id}: {url}')
     except Exception as exp:
