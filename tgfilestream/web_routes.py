@@ -57,11 +57,13 @@ async def handle_request(req: web.Request, head: bool = False) -> web.Response:
     dl = 'dl' in req.query.keys()
     peer, msg_id = unpack_id(file_id)
     if not peer or not msg_id:
-        return web.Response(status=404, text='404: Not Found')
+        ret = ' peer or msg_id None,file_id=%s,msg_id=%s' % (file_id, msg_id)
+        return web.Response(status=404, text=ret)
 
     message = cast(Message, await client.get_messages(entity=peer, ids=msg_id))
     if not message or not message.file or get_file_name(message) != file_name:
-        return web.Response(status=404, text='404: Not Found')
+        ret = 'msg not found file_id=%s' % file_id
+        return web.Response(status=404, text=ret)
 
     size = message.file.size
     offset = req.http_range.start or 0
