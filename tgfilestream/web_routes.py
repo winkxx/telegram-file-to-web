@@ -58,20 +58,22 @@ async def handle_request(req: web.Request, head: bool = False) -> web.Response:
     file_name = req.match_info['name']
     file_id = str(req.match_info['id'])
     dl = 'dl' in req.query.keys()
-
-    chat_id, msg_id, is_group, is_channel = StringCoder.decode(file_id).split('|')
+    try:
+        chat_id, msg_id, is_group, is_channel = StringCoder.decode(file_id).split('|')
+    except:
+        return web.Response(status=404, text='not found')
     if bool(is_channel):
-        peer = InputPeerChannel(channel_id=chat_id, access_hash=0)
+        peer = InputPeerChannel(channel_id=int(chat_id), access_hash=0)
     elif bool(is_group):
-        peer = InputPeerChat(chat_id=chat_id)
+        peer = InputPeerChat(chat_id=int(chat_id))
     else:
-        peer = InputPeerUser(user_id=chat_id, access_hash=0)
+        peer = InputPeerUser(user_id=int(chat_id), access_hash=0)
 
     if not peer or not msg_id:
         ret = ' peer or msg_id None,file_id=%s,msg_id=%s' % (file_id, msg_id)
         return web.Response(status=404, text=ret)
 
-    message = cast(Message, await client.get_messages(entity=peer, ids=msg_id))
+    message = cast(Message, await client.get_messages(entity=peer, ids=int(msg_id)))
     if not message or not message.file or get_file_name(message) != file_name:
         ret = 'msg not found file_id=%s' % file_id
         return web.Response(status=404, text=ret)
