@@ -33,7 +33,8 @@ async def handle_message(evt: events.NewMessage.Event) -> None:
     if str(evt.from_id) not in allowed_user:
         log.info(f'user {evt.from_id} not allowed to use this bot')
         return
-    if not evt.is_private or not evt.file:
+    if not evt.file:
+        log.info('not evt.file')
         return
 
     try:
