@@ -3,3 +3,5 @@ yarl
 telethon
 cryptg
 pycrypto
+apscheduler
+requests

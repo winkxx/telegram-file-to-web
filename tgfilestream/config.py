@@ -39,6 +39,7 @@ trust_headers = os.environ.get('TRUST_FORWARD_HEADERS', '0') != '0'
 host = os.environ.get('HOST', '0.0.0.0')
 public_url = URL(os.environ.get('PUBLIC_URL', f'http://{host}:{port}'))
 link_prefix = URL(os.environ.get('LINK_PREFIX', public_url))
+keep_awake = os.environ.get('KEEP_AWAKE', '0') != '0'
 session = "dyimg"
 log_config = os.environ.get('LOG_CONFIG')
 debug = os.environ.get('DEBUG', '0') != '0'

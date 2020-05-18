@@ -18,11 +18,12 @@ import sys
 
 from aiohttp import web
 from telethon import functions
-
-from tgfilestream.config import host, port, allowed_user, bot_token, link_prefix
-from tgfilestream.log import log
 from tgfilestream.telegram import client, transfer
 from tgfilestream.web_routes import routes
+from tgfilestream.config import host, port, link_prefix, allowed_user, bot_token, debug, show_index, keep_awake
+from tgfilestream.log import log
+from apscheduler.schedulers.background import BackgroundScheduler
+import requests
 
 server = web.Application()
 server.add_routes(routes)
@@ -53,6 +54,11 @@ async def stop() -> None:
     await client.disconnect()
 
 
+def keep_wake():
+    resp = requests.get(link_prefix)
+    log.debug('keep_wake', 'get', link_prefix, 'result', resp.status_code)
+
+
 try:
     loop.run_until_complete(start())
 except Exception:
@@ -63,11 +69,21 @@ log.info('Initialization complete')
 log.debug(f'Listening at http://{host}:{port}')
 log.debug(f'Public URL prefix is {link_prefix}')
 log.debug(f'allowed user ids {allowed_user}')
+log.debug(f'Debug={debug},show_index={show_index}')
+
 
 try:
+    if keep_awake:
+        scheduler = BackgroundScheduler()
+        scheduler.add_job(keep_wake, 'interval', seconds=120)
+        scheduler.start()
     loop.run_forever()
 except KeyboardInterrupt:
+    if keep_awake:
+        scheduler.shutdown()
     loop.run_until_complete(stop())
 except Exception:
     log.fatal('Fatal error in event loop', exc_info=True)
+    if keep_awake:
+        scheduler.shutdown()
     sys.exit(3)

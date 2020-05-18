@@ -50,6 +50,7 @@ def extract_peer(encrypt_str: str):
         return None, None
 
 
+
 @routes.get(r'')
 async def index(req: web.Request) -> web.Response:
     if show_index:
@@ -72,7 +73,6 @@ async def favicon(req: web.Request) -> web.Response:
 @routes.head(r'/{id:\S+}/{name}')
 async def handle_head_request(req: web.Request) -> web.Response:
     return await handle_request(req, head=True)
-
 
 @routes.get(r'/{id:\S+}/{name}')
 async def handle_get_request(req: web.Request) -> web.Response:
