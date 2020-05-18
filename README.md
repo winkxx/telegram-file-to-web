@@ -1,26 +1,48 @@
 # tgfilestream
 A Telegram bot that can stream Telegram files to users over HTTP.
 
-## Setup
-Install dependencies (see [requirements.txt](/requirements.txt)), configure
-environment variables (see below) and run with `python3 -m tgfilestream`.
+## 安装流程
+- 使用 `pip3 install -r requirements.txt` 安装依赖, 
+- 配置 环境变量 
+- 最后 `python3 start.py` 开始
 
-A reverse proxy is recommended to add TLS. When using a reverse proxy, keep
-`HOST` as-is, but add the publicly accessible URL to `PUBLIC_URL`. The URL
-should include the protocol, e.g. `https://example.com`.
-
-### Environment variables
-* `TG_API_ID` (required) - Your Telegram API ID.
-* `TG_API_HASH` (required) - Your Telegram API hash.
-* `TG_SESSION_NAME` (defaults to `tgfilestream`) - The name of the Telethon session file to use.
-* `PORT` (defaults to `8080`) - The port to listen at.
-* `HOST` (defaults to `localhost`) - The host to listen at.
-* `PUBLIC_URL` (defaults to `http://localhost:8080`) - The prefix for links that the bot gives.
-* `TRUST_FORWARD_HEADERS` (defaults to false) - Whether or not to trust X-Forwarded-For headers when logging requests.
+### nginx 反代
+```bash
+location / {
+  #Proxy Settings
+  proxy_set_header Host               $host;
+  proxy_set_header X-Real-IP          $remote_addr;
+  proxy_set_header X-Forwarded-For    $proxy_add_x_forwarded_for;
+  proxy_set_header Accept-Encoding    "";
+  
+  proxy_redirect off;
+  proxy_intercept_errors on;
+  proxy_max_temp_file_size 5120k;
+  proxy_headers_hash_max_size 512;
+  proxy_headers_hash_bucket_size  512;
+  proxy_connect_timeout   90;
+  proxy_send_timeout 90;
+  
+  proxy_buffer_size 128k;
+  proxy_buffers 4 256k;
+  proxy_busy_buffers_size 256k;
+  proxy_temp_file_write_size 2560k;
+  proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+  proxy_pass http://<HOST>:<PORT>;
+}
+```
+### 必要的环境变量
+* `TG_API_ID` (required) - Telegram API ID ,从 https://my.telegram.org 获取.
+* `TG_API_HASH` (required) - Telegram API hash, 同上
+* `TG_SESSION_NAME` (defaults to `dyimg`) - Telethon session 数据库文件名
+* `PORT` (defaults to `8080`) - 默认监听端口.
+* `HOST` (defaults to `0.0.0.0`) - 默认监听地址.
+* `LINK_PREFIX` (defaults to `http://HOST:PORT`) - 图片访问前缀
 * `DEBUG` (defaults to false) - Whether or not to enable extra prints.
-* `LOG_CONFIG` - Path to a Python basic log config. Overrides `DEBUG`.
-* `REQUEST_LIMIT` (default 5) - The maximum number of requests a single IP can have active at a time.
-* `CONNECTION_LIMIT` (default 20) - The maximum number of connections to a single Telegram datacenter.
+* `ALLOW_USER_IDS` (defaults to []) - bot服务白名单, `*` 为所有用户,当指定 `*` 时,只能私聊有效
+* `MAX_FILE_SIZE` (defaults to 20 MB) - 文件最大值(单位字节)
+* `WEB_AP_KEY` (default to NULL) Web 接口删除图片认证Key
+* `SHOW_INDEX` (default to False) 是否在 `LINK_PREFIX` 下显示 bot 信息和链接
 
 ### Try
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)

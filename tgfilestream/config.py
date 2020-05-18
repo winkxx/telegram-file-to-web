@@ -13,8 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import sys
 import os
+import sys
 
 from yarl import URL
 
@@ -35,13 +35,18 @@ except (KeyError, ValueError):
     print('You can get your own API keys at https://my.telegram.org/apps')
     sys.exit(1)
 
-trust_headers = bool(os.environ.get('TRUST_FORWARD_HEADERS'))
+trust_headers = os.environ.get('TRUST_FORWARD_HEADERS', '0') != '0'
 host = os.environ.get('HOST', '0.0.0.0')
 public_url = URL(os.environ.get('PUBLIC_URL', f'http://{host}:{port}'))
 link_prefix = URL(os.environ.get('LINK_PREFIX', public_url))
 session = "dyimg"
 log_config = os.environ.get('LOG_CONFIG')
-debug = bool(os.environ.get('DEBUG'))
+debug = os.environ.get('DEBUG', '0') != '0'
+web_api_key = os.environ.get('WEB_AP_KEY', None)
+show_index = os.environ.get('SHOW_INDEX', '0') != '0'
+
+if web_api_key == '':
+    web_api_key = None
 
 try:
     # The per-user ongoing request limit
@@ -63,5 +68,3 @@ try:
     admin_id = int(os.environ.get('ADMIN_ID', 0))
 except ValueError:
     admin_id = 0
-
-print(api_id,api_hash,bot_token,allowed_user)

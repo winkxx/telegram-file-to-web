@@ -19,10 +19,10 @@ import sys
 from aiohttp import web
 from telethon import functions
 
+from tgfilestream.config import host, port, allowed_user, bot_token, link_prefix
+from tgfilestream.log import log
 from tgfilestream.telegram import client, transfer
 from tgfilestream.web_routes import routes
-from tgfilestream.config import host, port, public_url, allowed_user,bot_token
-from tgfilestream.log import log
 
 server = web.Application()
 server.add_routes(routes)
@@ -61,7 +61,7 @@ except Exception:
 
 log.info('Initialization complete')
 log.debug(f'Listening at http://{host}:{port}')
-log.debug(f'Public URL prefix is {public_url}')
+log.debug(f'Public URL prefix is {link_prefix}')
 log.debug(f'allowed user ids {allowed_user}')
 
 try:

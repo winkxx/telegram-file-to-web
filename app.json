@@ -17,16 +17,16 @@
       "description": "管理员ID,不受任何限制私聊",
       "value": ""
     },
+    "WEB_AP_KEY": {
+      "description": "Web CURL 管理删除图片用认证Key,需要修改掉默认值",
+      "value": "326e6939-bcab-4dc0-86f4-a414b22cebbc"
+    },
     "ALLOW_USER_IDS": {
       "description": "允许bot互动的群组,频道和用户ID 逗号分隔",
       "value": ""
     },
     "LINK_PREFIX": {
       "description": "下载链接前缀一般是 <name>.herokuapp.com ",
-      "value": ""
-    },
-    "PRIVATE_ONLY": {
-      "description": "只响应私聊消息",
       "value": ""
     },
     "MAX_FILE_SIZE": {

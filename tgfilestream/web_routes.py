@@ -13,23 +13,50 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Dict, cast
-from collections import defaultdict
 import logging
+from collections import defaultdict
+from typing import Dict, cast
 
-from telethon.tl.custom import Message
 from aiohttp import web
+from telethon.tl.custom import Message
+from telethon.tl.types import InputPeerChannel, InputPeerChat, InputPeerUser
 
-from telethon.tl.types import TypeInputPeer, InputPeerChannel, InputPeerChat, InputPeerUser
-
-from .util import get_file_name, get_requester_ip
+from .config import request_limit, web_api_key, show_index
 from .string_encoder import StringCoder
-from .config import request_limit
 from .telegram import client, transfer
+from .util import get_file_name, get_requester_ip
 
 log = logging.getLogger(__name__)
 routes = web.RouteTableDef()
 ongoing_requests: Dict[str, int] = defaultdict(lambda: 0)
+
+
+def extract_peer(encrypt_str: str):
+    try:
+        chat_id, msg_id, is_group, is_channel = StringCoder.decode(encrypt_str).split('|')
+        if bool(int(is_channel)) and bool(int(is_group)):
+            peer = InputPeerChat(chat_id=int(chat_id))
+        else:
+            if bool(int(is_group)):
+                peer = InputPeerChat(chat_id=int(chat_id))
+            elif bool(int(is_channel)):
+                peer = InputPeerChannel(channel_id=int(chat_id), access_hash=0)
+            else:
+                peer = InputPeerUser(user_id=int(chat_id), access_hash=0)
+        return peer, msg_id
+    except Exception as ep:
+        log.debug(ep)
+        return None, None
+
+
+@routes.get(r'')
+async def index(req: web.Request) -> web.Response:
+    if show_index:
+        self_me = await client.get_me()
+        index_html = f'<a target="_blank" href="https://t.me/{self_me.username}">{self_me.first_name}</a><br/>'
+        return web.Response(status=200, text=index_html, content_type='text/html')
+    else:
+        return web.Response(status=403, text='<h3>403 Forbidden</h3>', content_type='text/html')
 
 
 @routes.head(r'/{id:\S+}/{name}')
@@ -40,6 +67,19 @@ async def handle_head_request(req: web.Request) -> web.Response:
 @routes.get(r'/{id:\S+}/{name}')
 async def handle_get_request(req: web.Request) -> web.Response:
     return await handle_request(req, head=False)
+
+
+@routes.delete(r'/{id:\S+}')
+async def delete_image(req: web.Request) -> web.Response:
+    file_id = str(req.match_info['id'])
+    check_key = req.headers.get('WEB_AP_KEY')
+    if check_key is None or check_key != web_api_key:
+        return web.Response(status=401, text='Not Allowed\r\n')
+    peer, msg_id = extract_peer(file_id)
+    if not peer or not msg_id:
+        return web.Response(status=404, text='not found\r\n')
+    await client.delete_messages(peer, [msg_id])
+    return web.Response(status=200, text=f'msg {file_id} deleted\r\n')
 
 
 def allow_request(ip: str) -> None:
@@ -58,28 +98,15 @@ async def handle_request(req: web.Request, head: bool = False) -> web.Response:
     file_name = req.match_info['name']
     file_id = str(req.match_info['id'])
     dl = 'dl' in req.query.keys()
-    try:
-        chat_id, msg_id, is_group, is_channel = StringCoder.decode(file_id).split('|')
-    except:
-        return web.Response(status=404, text='not found')
-    if bool(int(is_channel)) and bool(int(is_group)):
-        peer = InputPeerChat(chat_id=int(chat_id))
-    else:
-        if bool(int(is_group)):
-            peer = InputPeerChat(chat_id=int(chat_id))
-        elif bool(int(is_channel)):
-            peer = InputPeerChannel(channel_id=int(chat_id), access_hash=0)
-        else:
-            peer = InputPeerUser(user_id=int(chat_id), access_hash=0)
-    log.debug(chat_id, msg_id, is_group, is_channel)
-    log.debug(peer)
+
+    peer, msg_id = extract_peer(file_id)
     if not peer or not msg_id:
-        ret = 'peer or msg_id None,file_id=%s,msg_id=%s' % (file_id, msg_id)
+        ret = 'peer or msg_id None,file_id=%s,msg_id=%s\r\n' % (file_id, msg_id)
         return web.Response(status=404, text=ret)
 
     message = cast(Message, await client.get_messages(entity=peer, ids=int(msg_id)))
     if not message or not message.file or get_file_name(message) != file_name:
-        ret = 'msg not found file_id=%s' % file_id
+        ret = 'msg not found file_id=%s\r\n' % file_id
         return web.Response(status=404, text=ret)
 
     size = message.file.size
@@ -90,7 +117,7 @@ async def handle_request(req: web.Request, head: bool = False) -> web.Response:
         ip = get_requester_ip(req)
         if not allow_request(ip):
             return web.Response(status=429)
-        log.info(f'Serving file in {message.id} (chat {message.chat_id}) to {ip}')
+        log.debug(f'Serving file in {message.id} (chat {message.chat_id}) to {ip}')
         body = transfer.download(message.media, file_size=size, offset=offset, limit=limit)
     else:
         body = None

@@ -13,21 +13,21 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Union, AsyncGenerator, AsyncContextManager, Dict, Optional, List
+import asyncio
+import logging
+import math
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-import logging
-import asyncio
-import math
+from typing import Union, AsyncGenerator, AsyncContextManager, Dict, Optional, List
 
 from telethon import TelegramClient, utils
 from telethon.crypto import AuthKey
+from telethon.errors import DcIdInvalidError
 from telethon.network import MTProtoSender
 from telethon.tl.functions.auth import ExportAuthorizationRequest, ImportAuthorizationRequest
 from telethon.tl.functions.upload import GetFileRequest
 from telethon.tl.types import (Document, InputFileLocation, InputDocumentFileLocation,
                                InputPhotoFileLocation, InputPeerPhotoFileLocation, DcOption)
-from telethon.errors import DcIdInvalidError
 
 from .config import connection_limit
 
