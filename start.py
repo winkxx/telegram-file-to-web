@@ -71,10 +71,10 @@ log.debug(f'Public URL prefix is {link_prefix}')
 log.debug(f'allowed user ids {allowed_user}')
 log.debug(f'Debug={debug},show_index={show_index}')
 
+scheduler = BackgroundScheduler()
 
 try:
     if keep_awake:
-        scheduler = BackgroundScheduler()
         scheduler.add_job(keep_wake, 'interval', seconds=120)
         scheduler.start()
     loop.run_forever()

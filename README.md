@@ -34,14 +34,13 @@ location / {
 ### 必要的环境变量
 * `TG_API_ID` (required) - Telegram API ID ,从 https://my.telegram.org 获取.
 * `TG_API_HASH` (required) - Telegram API hash, 同上
-* `TG_SESSION_NAME` (defaults to `dyimg`) - Telethon session 数据库文件名
 * `PORT` (defaults to `8080`) - 默认监听端口.
 * `HOST` (defaults to `0.0.0.0`) - 默认监听地址.
 * `LINK_PREFIX` (defaults to `http://HOST:PORT`) - 图片访问前缀
-* `DEBUG` (defaults to false) - Whether or not to enable extra prints.
-* `ALLOW_USER_IDS` (defaults to []) - bot服务白名单, `*` 为所有用户,当指定 `*` 时,只能私聊有效
+* `DEBUG` (defaults to False) - 是否显示 debug 日志
+* `ALLOW_USER_IDS` (defaults to []) - bot服务白名单, `*` 为所有用户,当指定 `*` 时,只相应私聊消息
 * `MAX_FILE_SIZE` (defaults to 20 MB) - 文件最大值(单位字节)
-* `WEB_AP_KEY` (default to NULL) Web 接口删除图片认证Key
+* `WEB_API_KEY` (default to NULL) Web 接口删除图片认证Key
 * `SHOW_INDEX` (default to False) 是否在 `LINK_PREFIX` 下显示 bot 信息和链接
 
 ### Try

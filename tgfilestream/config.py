@@ -32,7 +32,7 @@ try:
     bot_token = os.environ['TG_BOT_TOKEN']
 except (KeyError, ValueError):
     print('Please set the TG_API_ID and TG_API_HASH and TG_BOT_TOKEN environment variables correctly')
-    print('You can get your own API keys at https://my.telegram.org/apps')
+    print('You can get your own API keys at https://my.telegram.org/apps and @botfather')
     sys.exit(1)
 
 trust_headers = os.environ.get('TRUST_FORWARD_HEADERS', '0') != '0'
@@ -43,7 +43,7 @@ keep_awake = os.environ.get('KEEP_AWAKE', '0') != '0'
 session = "dyimg"
 log_config = os.environ.get('LOG_CONFIG')
 debug = os.environ.get('DEBUG', '0') != '0'
-web_api_key = os.environ.get('WEB_AP_KEY', None)
+web_api_key = os.environ.get('WEB_API_KEY', None)
 show_index = os.environ.get('SHOW_INDEX', '0') != '0'
 
 if web_api_key == '':
