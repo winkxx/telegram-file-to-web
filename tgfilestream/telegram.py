@@ -41,7 +41,8 @@ async def handle_message(evt: events.NewMessage.Event) -> None:
     else:
         if not evt.file:
             log.info('not evt.file')
-            await evt.delete()
+            if not str(evt.message.message).startswith('/start'):
+                await evt.delete()
             return
         try:
             ret = get_media_meta(evt.media)
