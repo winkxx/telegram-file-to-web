@@ -44,7 +44,6 @@ async def start() -> None:
             client.session.save()
             break
     transfer.post_init()
-
     await runner.setup()
     await web.TCPSite(runner, host, port).start()
 
