@@ -19,7 +19,6 @@ from telethon.tl.custom import Message
 from telethon.tl.types import TypeInputPeer, InputPeerChannel, InputPeerChat, InputPeerUser
 from aiohttp import web
 
-from .config import trust_headers
 
 pack_bits = 32
 pack_bit_mask = (1 << pack_bits) - 1
@@ -63,11 +62,6 @@ def get_file_name(message: Union[Message, events.NewMessage.Event]) -> str:
 
 
 def get_requester_ip(req: web.Request) -> str:
-    if trust_headers:
-        try:
-            return req.headers['X-Forwarded-For']
-        except KeyError:
-            pass
     peername = req.transport.get_extra_info('peername')
     if peername is not None:
         return peername[0]
