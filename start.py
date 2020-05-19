@@ -20,7 +20,7 @@ from aiohttp import web
 from telethon import functions
 from tgfilestream.telegram import client, transfer
 from tgfilestream.web_routes import routes
-from tgfilestream.config import host, port, link_prefix, allowed_user, bot_token, debug, show_index, keep_awake
+from tgfilestream.config import host, port, link_prefix, allowed_user, bot_token, debug, show_index, keep_awake, keep_awake_url
 from tgfilestream.log import log
 from apscheduler.schedulers.background import BackgroundScheduler
 import requests
@@ -55,8 +55,8 @@ async def stop() -> None:
 
 
 def keep_wake():
-    resp = requests.get(link_prefix)
-    log.debug('keep_wake', 'get', link_prefix, 'result', resp.status_code)
+    resp = requests.get(keep_awake_url)
+    log.debug('keep_wake', 'get', str(keep_awake_url), 'result', resp.status_code, resp.content)
 
 
 try:

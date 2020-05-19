@@ -38,7 +38,7 @@ location / {
 * `HOST` (defaults to `0.0.0.0`) - 默认监听地址.
 * `LINK_PREFIX` (defaults to `http://HOST:PORT`) - 图片访问前缀
 * `DEBUG` (defaults to False) - 是否显示 debug 日志
-* `ALLOW_USER_IDS` (defaults to []) - bot服务白名单, `*` 为所有用户,当指定 `*` 时,只相应私聊消息
+* `ALLOW_USER_IDS` (defaults to []) - bot服务白名单, `*` 为所有用户,当指定 `*` 时,只响应私聊消息
 * `MAX_FILE_SIZE` (defaults to 20 MB) - 文件最大值(单位字节)
 * `WEB_API_KEY` (default to NULL) Web 接口删除图片认证Key
 * `SHOW_INDEX` (default to False) 是否在 `LINK_PREFIX` 下显示 bot 信息和链接
