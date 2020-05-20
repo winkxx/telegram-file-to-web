@@ -6,10 +6,10 @@ from aiohttp import web
 from telethon.tl.custom import Message
 from telethon.tl.types import InputPeerChannel, InputPeerChat, InputPeerUser
 
-from .config import web_api_key, show_index
+from .config import web_api_key, show_index, link_prefix, admin_id, max_file_size
 from .string_encoder import StringCoder
 from .telegram_bot import client, transfer
-from .util import get_file_name
+from .util import get_file_name, get_requester_ip
 
 log = logging.getLogger(__name__)
 routes = web.RouteTableDef()
@@ -79,6 +79,37 @@ async def delete_image(req: web.Request) -> web.Response:
     return web.Response(status=200, text=f'msg {file_id} deleted\r\n')
 
 
+@routes.post(r'/upload')
+async def upload_image(req: web.Request) -> web.Response:
+    check_key = req.headers.get('WEB_AP_KEY')
+    if check_key is None or check_key != web_api_key:
+        j = {'code': 401, 'msg': 'not allowed'}
+        return web.json_response(j, status=401)
+
+    data = await req.post()
+    if 'file' not in data.keys():
+        j = {'code': 400, 'msg': 'no file found'}
+        return web.json_response(j, status=400)
+
+    file_size_est = req.headers.get("Content-Length")
+    log.debug(f'Content-Length: {file_size_est}')
+    if file_size_est > max_file_size:
+        j = {'code': 400, 'msg': 'file too large'}
+        return web.json_response(j, status=400)
+
+    input_file = data['file'].file
+
+    entity = InputPeerUser(user_id=int(admin_id), access_hash=0)
+    msg = await client.send_file(entity, file=input_file.read(), force_document=True)
+    file_id = StringCoder.encode(f"{admin_id}|{msg.id}|0|0")
+    fn = get_file_name(msg)
+
+    await client.edit_message(entity, msg, f'{link_prefix}/{file_id}/{fn}', file=msg.media)
+
+    ret = {'code': 0, 'msg': 'OK', 'url': f'{link_prefix}/{file_id}/{fn}'}
+    return web.json_response(ret)
+
+
 async def handle_request(req: web.Request, head: bool = False) -> web.Response:
     file_name = req.match_info['name']
     file_id = str(req.match_info['id'])
@@ -99,7 +130,7 @@ async def handle_request(req: web.Request, head: bool = False) -> web.Response:
     size = message.file.size
     offset = req.http_range.start or 0
     limit = req.http_range.stop or size
-
+    ip = get_requester_ip(req)
     if not head:
         log.debug(f'Serving file in {message.id} (chat {message.chat_id}) to {ip}')
         body = transfer.download(message.media, file_size=size, offset=offset, limit=limit)

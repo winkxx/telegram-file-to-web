@@ -52,9 +52,11 @@ async def handle_message(evt: events.NewMessage.Event) -> None:
         c = cast(Message, await client.get_messages(entity=peer, ids=evt.reply_to_msg_id))
         me = await client.get_me()
         reply_msg = cast(Message, await c.get_reply_message())
-        log.debug(f'msg_from={c.from_id},evt_from={evt.from_id},c is reply={c.is_reply}'
+
+        log.debug(f'c.from_id={c.from_id},evt_from={evt.from_id},reply_chat_id={c.chat_id}'
                   f',reply_msg_from={reply_msg.from_id if reply_msg is not None else 0}')
-        if c.from_id == evt.from_id or (c.from_id == me.id and c.is_reply):
+
+        if c.from_id == evt.from_id or (c.from_id == me.id and c.chat_id == evt.from_id):
             if (reply_msg is not None and reply_msg.from_id == evt.from_id) or reply_msg is None:
                 await client.delete_messages(evt.input_chat, [evt.reply_to_msg_id])
         await evt.delete()
