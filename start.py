@@ -7,8 +7,9 @@ from aiohttp import web
 from apscheduler.schedulers.background import BackgroundScheduler
 from telethon import functions
 
+from app.util import sizeof_fmt
 from app.config import host, port, link_prefix, allowed_user, bot_token, debug, show_index, keep_awake, \
-    keep_awake_url
+    keep_awake_url, max_file_size
 from app.telegram_bot import client, transfer
 from app.web import routes
 
@@ -28,9 +29,11 @@ scheduler = BackgroundScheduler()
 
 log.info('Initialization complete')
 log.debug(f'Listening at http://{host}:{port}')
-log.debug(f'Public URL prefix is {link_prefix}')
-log.debug(f'allowed user ids {allowed_user}')
-log.debug(f'Debug={debug},show_index={show_index}')
+log.info(f'Public URL prefix is {link_prefix}')
+log.info(f'allowed user ids {allowed_user}')
+log.info(f'Debug={debug},show_index={show_index}')
+log.info(f'max file size is {sizeof_fmt(max_file_size)}')
+log.debug(f'BotToken={bot_token}')
 
 
 async def start() -> None:

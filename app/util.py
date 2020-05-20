@@ -13,46 +13,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Tuple, Union
+import logging
+from typing import Union
+
+from aiohttp import web
 from telethon import events
 from telethon.tl.custom import Message
-from telethon.tl.types import TypeInputPeer, InputPeerChannel, InputPeerChat, InputPeerUser
-from aiohttp import web
 
-
-pack_bits = 32
-pack_bit_mask = (1 << pack_bits) - 1
-
-group_bit = 0b01
-channel_bit = 0b10
-chat_id_offset = 2
-msg_id_offset = pack_bits + chat_id_offset
-
-
-def pack_id(evt: events.NewMessage.Event) -> int:
-    file_id = 0
-    if evt.is_group:
-        file_id |= group_bit
-    if evt.is_channel:
-        file_id |= channel_bit
-    file_id |= evt.chat_id << chat_id_offset
-    file_id |= evt.id << msg_id_offset
-    return file_id
-
-
-def unpack_id(file_id: int) -> Tuple[TypeInputPeer, int]:
-    is_group = file_id & group_bit
-    is_channel = file_id & channel_bit
-    chat_id = file_id >> chat_id_offset & pack_bit_mask
-    msg_id = file_id >> msg_id_offset & pack_bit_mask
-    if is_channel:
-        peer = InputPeerChannel(channel_id=chat_id, access_hash=0)
-    elif is_group:
-        peer = InputPeerChat(chat_id=chat_id)
-    else:
-        peer = InputPeerUser(user_id=chat_id, access_hash=0)
-    return peer, msg_id
-
+log = logging.getLogger(__name__)
 
 def get_file_name(message: Union[Message, events.NewMessage.Event]) -> str:
     if message.file.name:
@@ -77,5 +45,13 @@ def get_media_meta(media) -> (bool, bool, int, str):
             return True, str(media.document.mime_type).split("/")[0] == 'image', int(media.document.size), ''
         return False, False, 0, ''
     except Exception as ep:
+        log.debug(str(ep))
         return False, False, 0, str(ep)
 
+
+def sizeof_fmt(num, suffix='B'):
+    for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
+        if abs(num) < 1024.0:
+            return "%3.1f%s%s" % (num, unit, suffix)
+        num /= 1024.0
+    return "%.1f%s%s" % (num, 'Yi', suffix)
