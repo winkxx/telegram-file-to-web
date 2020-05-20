@@ -45,7 +45,7 @@ async def index(req: web.Request) -> web.Response:
 
 @routes.get(r'/favicon.ico')
 async def favicon(req: web.Request) -> web.Response:
-    fav_path = os.path.join(os.path.abspath(os.curdir), 'static', 'favicon.ico')
+    fav_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'static', 'favicon.ico')
     return web.FileResponse(fav_path
                             , headers={'Content-Type': 'image/x-icon'}
                             )
@@ -66,17 +66,25 @@ async def get_id(req: web.Request) -> web.Response:
     return web.Response(status=404, text='<h3>404 Not Found</h3>', content_type='text/html')
 
 
+@routes.get(r'/hb')
+async def heart_beat(req: web.Request) -> web.Response:
+    return web.Response(status=204)
+
+
 @routes.delete(r'/{id:\S+}')
 async def delete_image(req: web.Request) -> web.Response:
     file_id = str(req.match_info['id'])
     check_key = req.headers.get('WEB_API_KEY')
     if check_key is None or check_key != web_api_key:
-        return web.Response(status=401, text='<h3>401 Not Allowed</h3>', content_type='text/html')
+        j = {'code': 401, 'msg': 'not allowed'}
+        return web.json_response(j, status=401)
     peer, msg_id = extract_peer(file_id)
     if not peer or not msg_id:
-        return web.Response(status=404, text='<h3>404 Not Found</h3>', content_type='text/html')
+        j = {'code': 404, 'msg': 'not found'}
+        return web.json_response(j, status=404)
     await client.delete_messages(peer, [msg_id])
-    return web.Response(status=200, text=f'msg {file_id} deleted\r\n')
+    j = {'code': 0, 'msg': 'deleted', 'file_id': file_id}
+    return web.json_response(j, status=200)
 
 
 @routes.post(r'/upload')
@@ -106,7 +114,7 @@ async def upload_image(req: web.Request) -> web.Response:
 
     await client.edit_message(entity, msg, f'{link_prefix}/{file_id}/{fn}', file=msg.media)
 
-    ret = {'code': 0, 'msg': 'OK', 'url': f'{link_prefix}/{file_id}/{fn}'}
+    ret = {'code': 0, 'msg': 'OK', 'file_id': file_id, 'url': f'{link_prefix}/{file_id}/{fn}'}
     return web.json_response(ret)
 
 
