@@ -65,7 +65,8 @@ try:
         scheduler.start()
     loop.run_until_complete(start())
     loop.run_forever()
-except Exception:
+except Exception as ep:
+    print(str(ep))
     if keep_awake:
         scheduler.shutdown()
     sys.exit(2)

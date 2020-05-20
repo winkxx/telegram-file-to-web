@@ -5,3 +5,4 @@ cryptg
 pycrypto
 apscheduler
 requests
+pysocks

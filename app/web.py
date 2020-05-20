@@ -18,6 +18,7 @@ routes = web.RouteTableDef()
 def extract_peer(encrypt_str: str):
     try:
         chat_id, msg_id, is_group, is_channel = StringCoder.decode(encrypt_str).split('|')
+        log.debug(f'chat_id={chat_id}, msg_id={msg_id}, is_group={is_group}, is_channel={is_channel}')
         if bool(int(is_channel)) and bool(int(is_group)):
             peer = InputPeerChat(chat_id=int(chat_id))
         else:
@@ -51,6 +52,11 @@ async def favicon(req: web.Request) -> web.Response:
                             )
 
 
+@routes.get('/hb')
+async def handle_heart_beat(req: web.Request) -> web.Response:
+    return web.Response(status=200, text='OK\r\n')
+
+
 @routes.head(r'/{id:\S+}/{name}')
 async def handle_head_request(req: web.Request) -> web.Response:
     return await handle_request(req, head=True)
@@ -59,16 +65,6 @@ async def handle_head_request(req: web.Request) -> web.Response:
 @routes.get(r'/{id:\S+}/{name}')
 async def handle_get_request(req: web.Request) -> web.Response:
     return await handle_request(req, head=False)
-
-
-@routes.get(r'/{id:\S+}')
-async def get_id(req: web.Request) -> web.Response:
-    return web.Response(status=404, text='<h3>404 Not Found</h3>', content_type='text/html')
-
-
-@routes.get(r'/hb')
-async def heart_beat(req: web.Request) -> web.Response:
-    return web.Response(status=204)
 
 
 @routes.delete(r'/{id:\S+}')
@@ -122,7 +118,7 @@ async def handle_request(req: web.Request, head: bool = False) -> web.Response:
     file_name = req.match_info['name']
     file_id = str(req.match_info['id'])
     dl = 'dl' in req.query.keys()
-
+    log.debug(f'id={file_id},name={file_name}')
     peer, msg_id = extract_peer(file_id)
     if not peer or not msg_id:
         ret = 'peer or msg_id None,file_id=%s,msg_id=%s\r\n' % (file_id, msg_id)
