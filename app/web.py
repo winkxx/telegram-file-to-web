@@ -69,7 +69,7 @@ async def get_id(req: web.Request) -> web.Response:
 @routes.delete(r'/{id:\S+}')
 async def delete_image(req: web.Request) -> web.Response:
     file_id = str(req.match_info['id'])
-    check_key = req.headers.get('WEB_AP_KEY')
+    check_key = req.headers.get('WEB_API_KEY')
     if check_key is None or check_key != web_api_key:
         return web.Response(status=401, text='<h3>401 Not Allowed</h3>', content_type='text/html')
     peer, msg_id = extract_peer(file_id)
@@ -81,7 +81,7 @@ async def delete_image(req: web.Request) -> web.Response:
 
 @routes.post(r'/upload')
 async def upload_image(req: web.Request) -> web.Response:
-    check_key = req.headers.get('WEB_AP_KEY')
+    check_key = req.headers.get('WEB_API_KEY')
     if check_key is None or check_key != web_api_key:
         j = {'code': 401, 'msg': 'not allowed'}
         return web.json_response(j, status=401)
