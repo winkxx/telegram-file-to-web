@@ -2,7 +2,7 @@ aiohttp
 yarl
 telethon
 cryptg
-pycrypto
+pycryptodome
 apscheduler
 requests
 pysocks
