@@ -1,9 +1,11 @@
 
 import os
 import sys
-
+import logging
 from yarl import URL
 
+
+log = logging.getLogger('telegram-file-to-web')
 try:
     port = int(os.environ.get('PORT', '8080'))
 except ValueError:
@@ -52,6 +54,8 @@ except ValueError:
 
 allowed_user = os.environ.get('ALLOW_USER_IDS', '').split(',')
 max_file_size = int(os.environ.get('MAX_FILE_SIZE', str(1024 * 1024 * 20)))
+if max_file_size > 1024**2*1500:
+    log.info('set max file size to 1.5GB due to telegram restriction')
 try:
     admin_id = int(os.environ.get('ADMIN_ID', 0))
 except ValueError:

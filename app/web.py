@@ -11,7 +11,7 @@ from .string_encoder import StringCoder
 from .telegram_bot import client, transfer
 from .util import get_file_name, get_requester_ip
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('telegram-file-to-web')
 routes = web.RouteTableDef()
 
 
@@ -83,6 +83,11 @@ async def delete_image(req: web.Request) -> web.Response:
     return web.json_response(j, status=200)
 
 
+@routes.get(r'/upload')
+async def get_upload_image(req: web.Request) -> web.Response:
+    return web.Response(status=404, text='<h3>404 Not Found</h3>', content_type='text/html')
+
+
 @routes.post(r'/upload')
 async def upload_image(req: web.Request) -> web.Response:
     check_key = req.headers.get('WEB_API_KEY')
@@ -97,14 +102,17 @@ async def upload_image(req: web.Request) -> web.Response:
 
     file_size_est = req.headers.get("Content-Length")
     log.debug(f'Content-Length: {file_size_est}')
-    if file_size_est > max_file_size:
+    if int(file_size_est) > max_file_size:
         j = {'code': 400, 'msg': 'file too large'}
         return web.json_response(j, status=400)
 
     input_file = data['file'].file
-
+    file_name = data['file'].filename
     entity = InputPeerUser(user_id=int(admin_id), access_hash=0)
-    msg = await client.send_file(entity, file=input_file.read(), force_document=True)
+
+    media = await client.upload_file(input_file.read(), file_name=file_name, use_cache=True)
+    msg = await client.send_file(entity, file=media, force_document=True)
+
     file_id = StringCoder.encode(f"{admin_id}|{msg.id}|0|0")
     fn = get_file_name(msg)
 

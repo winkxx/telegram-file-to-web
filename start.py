@@ -8,8 +8,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from telethon import functions
 
 from app.util import sizeof_fmt
-from app.config import host, port, link_prefix, allowed_user, bot_token, debug, show_index, keep_awake, \
-    keep_awake_url, max_file_size
+from app.config import host, port, link_prefix, allowed_user, bot_token,\
+    debug, show_index, keep_awake, keep_awake_url, max_file_size
 from app.telegram_bot import client, transfer
 from app.web import routes
 
@@ -19,7 +19,7 @@ logging.getLogger('telethon').setLevel(50)
 logging.getLogger('apscheduler').setLevel(50)
 logging.getLogger('urllib3').setLevel(50)
 
-global_app = web.Application()
+global_app = web.Application(client_max_size=max_file_size+64*1024)
 global_app.add_routes(routes)
 
 runner = web.AppRunner(global_app)
@@ -47,7 +47,7 @@ async def start() -> None:
             break
     transfer.post_init()
     await runner.setup()
-    await web.TCPSite(runner, '0.0.0.0', 8080).start()
+    await web.TCPSite(runner, host, port).start()
 
 
 async def stop() -> None:
