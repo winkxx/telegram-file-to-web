@@ -14,7 +14,8 @@ from app.telegram_bot import client, transfer
 from app.web import routes
 
 logging.basicConfig(level=logging.DEBUG if debug else logging.INFO)
-log = logging.getLogger('telegram-to-file')
+
+log = logging.getLogger('telegram-file-to-web')
 logging.getLogger('telethon').setLevel(50)
 logging.getLogger('apscheduler').setLevel(50)
 logging.getLogger('urllib3').setLevel(50)

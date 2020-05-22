@@ -34,7 +34,7 @@ from .config import connection_limit
 TypeLocation = Union[Document, InputDocumentFileLocation, InputPeerPhotoFileLocation,
                      InputFileLocation, InputPhotoFileLocation]
 
-root_log = logging.getLogger(__name__)
+root_log = logging.getLogger('telegram-file-to-web')
 
 if connection_limit > 25:
     root_log.warning('The connection limit should not be set above 25 to avoid'

@@ -20,7 +20,7 @@ from aiohttp import web
 from telethon import events
 from telethon.tl.custom import Message
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('telegram-file-to-web')
 
 def get_file_name(message: Union[Message, events.NewMessage.Event]) -> str:
     if message.file.name:

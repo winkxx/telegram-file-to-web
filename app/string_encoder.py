@@ -1,5 +1,4 @@
 import base64
-import os
 import Crypto.Cipher.ARC4
 
 

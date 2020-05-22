@@ -10,9 +10,14 @@ from .string_encoder import StringCoder
 from .transfer_helper import ParallelTransferrer
 from .util import get_file_name, get_media_meta
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('telegram-file-to-web')
 
 client = TelegramClient(session, api_id, api_hash)
+
+# import socks
+# proxy = (socks.SOCKS5, '127.0.0.1', 7891)
+# client = TelegramClient(session, api_id, api_hash, proxy=proxy)
+
 transfer = ParallelTransferrer(client)
 
 

@@ -67,6 +67,11 @@ async def handle_get_request(req: web.Request) -> web.Response:
     return await handle_request(req, head=False)
 
 
+@routes.get(r'/{id:\S+}')
+async def get_upload_image(req: web.Request) -> web.Response:
+    return web.Response(status=404, text='<h3>404 Not Found</h3>', content_type='text/html')
+
+
 @routes.delete(r'/{id:\S+}')
 async def delete_image(req: web.Request) -> web.Response:
     file_id = str(req.match_info['id'])
@@ -106,8 +111,13 @@ async def upload_image(req: web.Request) -> web.Response:
         j = {'code': 400, 'msg': 'file too large'}
         return web.json_response(j, status=400)
 
-    input_file = data['file'].file
-    file_name = data['file'].filename
+    fl_obj = data['file']
+    if not isinstance(fl_obj, web.FileField):
+        j = {'code': 400, 'msg': 'file invalid'}
+        return web.json_response(j, status=400)
+
+    input_file = fl_obj.file
+    file_name = fl_obj.filename
     entity = InputPeerUser(user_id=int(admin_id), access_hash=0)
 
     media = await client.upload_file(input_file.read(), file_name=file_name, use_cache=True)
