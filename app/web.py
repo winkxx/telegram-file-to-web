@@ -1,5 +1,6 @@
 import logging
 import os
+import urllib.parse
 from typing import cast
 
 from aiohttp import web
@@ -38,7 +39,12 @@ def extract_peer(encrypt_str: str):
 async def index(req: web.Request) -> web.Response:
     if show_index:
         self_me = await client.get_me()
-        index_html = f'<a target="_blank" href="https://t.me/{self_me.username}">{self_me.first_name}</a><br/>'
+        index_html = ''
+        index_html += f'<html><head><title>{self_me.first_name}🤖</title></head><body>'
+        index_html += f'🤖<a target="_blank" href="https://t.me/{self_me.username}">{self_me.first_name}</a>🤖<br/>'
+        index_html += f'㊙️<a target="_blank" href="https://github.com/kuyagic/telegram-file-to-web">源码地址</a></br>'
+        index_html += f'😋欢迎自建以解锁单个文件大小和支持所有类型文件, 欢迎⭐Star 😘<br/>'
+        index_html += f'</body></html>'
         return web.Response(status=200, text=index_html, content_type='text/html')
     else:
         return web.Response(status=403, text='<h3>403 Forbidden</h3>', content_type='text/html')
@@ -133,7 +139,7 @@ async def upload_image(req: web.Request) -> web.Response:
 
 
 async def handle_request(req: web.Request, head: bool = False) -> web.Response:
-    file_name = req.match_info['name']
+    file_name = urllib.parse.quote_plus(req.match_info['name'])
     file_id = str(req.match_info['id'])
     dl = 'dl' in req.query.keys()
     log.debug(f'id={file_id},name={file_name}')
@@ -145,7 +151,9 @@ async def handle_request(req: web.Request, head: bool = False) -> web.Response:
 
     message = cast(Message, await client.get_messages(entity=peer, ids=int(msg_id)))
     if not message or not message.file or get_file_name(message) != file_name:
-        ret = 'msg not found file_id=%s\r\n' % file_id
+        ret = 'msg not found file_id=%s\r\nfile_name=%s' % (file_id, get_file_name(message)
+        if message is not None else '<NULL>')
+
         log.debug(ret)
         return web.Response(status=404, text='<h3>404 Not Found</h3>', content_type='text/html')
 

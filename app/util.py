@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import logging
+import urllib.parse
 from typing import Union
 
 from aiohttp import web
@@ -24,7 +25,7 @@ log = logging.getLogger('telegram-file-to-web')
 
 def get_file_name(message: Union[Message, events.NewMessage.Event]) -> str:
     if message.file.name:
-        return message.file.name
+        return urllib.parse.quote_plus(message.file.name)
     ext = message.file.ext or ''
     return f'{message.date.strftime("%Y-%m-%d_%H_%M_%S")}{ext}'
 
