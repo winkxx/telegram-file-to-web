@@ -23,6 +23,7 @@ from telethon.tl.custom import Message
 
 log = logging.getLogger('telegram-file-to-web')
 
+
 def get_file_name(message: Union[Message, events.NewMessage.Event]) -> str:
     if message.file.name:
         return urllib.parse.quote_plus(message.file.name)
