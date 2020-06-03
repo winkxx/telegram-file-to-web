@@ -56,7 +56,7 @@ host = get_config('host', '0.0.0.0')
 link_prefix = URL(get_config('link_prefix', f'http://{host}:{port}'))
 keep_awake = get_config('keep_awake', '0') != '0'
 keep_awake_url = get_config('keep_awake_url', str(link_prefix))
-session = "dyimg"
+session = os.environ.get('CFG_FILE', 'dyimg')
 # log_config = os.environ.get('LOG_CONFIG')
 debug = get_config('debug', '0') != '0'
 web_api_key = get_config('web_api_key', '')

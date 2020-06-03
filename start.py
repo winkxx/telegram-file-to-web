@@ -26,7 +26,7 @@ global_app.add_routes(routes)
 runner = web.AppRunner(global_app)
 loop = asyncio.get_event_loop()
 
-scheduler = BackgroundScheduler()
+scheduler = BackgroundScheduler({'apscheduler.timezone': 'UTC'})
 
 log.info('Initialization complete')
 log.debug(f'Listening at http://{host}:{port}')
