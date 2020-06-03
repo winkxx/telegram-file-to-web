@@ -23,8 +23,8 @@ def get_config(key_name: str, default: str = '') -> str:
         'admin_id': 'ADMIN_ID',
         'max_file_size': 'MAX_FILE_SIZE'
     }
-
-    config_file = os.path.join(os.path.dirname(__file__), '..', 'env.json')
+    config_file_name = os.environ.get('CFG_FILE', 'env.json')
+    config_file = os.path.join(os.path.dirname(__file__), '..', config_file_name)
     if os.path.isfile(config_file):
         config_obj = hjson.load(config_file)
         return config_obj.get(key_name, os.environ.get(json_env_map[key_name], default))
