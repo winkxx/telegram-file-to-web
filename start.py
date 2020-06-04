@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import sys
-
+import os
 import requests
 from aiohttp import web
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -9,7 +9,7 @@ from telethon import functions
 
 from app.util import sizeof_fmt
 from app.config import host, port, link_prefix, allowed_user, bot_token,\
-    debug, show_index, keep_awake, keep_awake_url, max_file_size
+    debug, show_index, keep_awake, keep_awake_url, max_file_size, session
 from app.telegram_bot import client, transfer
 from app.web import routes
 
@@ -54,6 +54,8 @@ async def start() -> None:
 async def stop() -> None:
     if keep_awake:
         scheduler.shutdown()
+    if os.path.isfile(f'{session}.pid'):
+        os.remove(f'{session}.pid')
     await runner.cleanup()
     await client.disconnect()
 
@@ -64,6 +66,9 @@ def keep_wake():
 
 
 try:
+    pid = os.getpid()
+    with open(f'{session}.pid', 'w') as f:
+        f.write(str(pid))
     if keep_awake:
         scheduler.add_job(keep_wake, 'interval', seconds=120)
         scheduler.start()
@@ -73,4 +78,6 @@ except Exception as ep:
     print(str(ep))
     if keep_awake:
         scheduler.shutdown()
+    if os.path.isfile(f'{session}.pid'):
+        os.remove(f'{session}.pid')
     sys.exit(2)
