@@ -132,9 +132,9 @@ async def upload_image(req: web.Request) -> web.Response:
     file_id = StringCoder.encode(f"{admin_id}|{msg.id}|0|0")
     fn = get_file_name(msg)
 
-    await client.edit_message(entity, msg, f'{link_prefix}/{file_id}/{fn}', file=msg.media)
+    await client.edit_message(entity, msg, f'{str(link_prefix).strip("/")}/{file_id}/{fn}', file=msg.media)
 
-    ret = {'code': 0, 'msg': 'OK', 'file_id': file_id, 'url': f'{link_prefix}/{file_id}/{fn}'}
+    ret = {'code': 0, 'msg': 'OK', 'file_id': file_id, 'url': f'{str(link_prefix).strip("/")}/{file_id}/{fn}'}
     return web.json_response(ret)
 
 

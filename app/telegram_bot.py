@@ -19,7 +19,7 @@ client = TelegramClient(session, api_id, api_hash)
 # client = TelegramClient(session, api_id, api_hash, proxy=proxy)
 
 transfer = ParallelTransferrer(client)
-
+link_prefix = str(link_prefix).strip("/")
 
 def new_message_filter(message_text):
     return not str(message_text).startswith('/start')
@@ -58,7 +58,7 @@ def get_url_by_message(message: Message, is_group: bool, is_channel: bool) -> ob
             f"{message.chat_id}|{message.id}|{1 if is_group else 0}|{1 if is_channel else 0}")
         log.debug(f"{message.chat_id}|{message.id}|{1 if is_group else 0}|{1 if is_channel else 0}")
         # url = public_url / str(pack_id(evt)) / get_file_name(evt)
-        url = link_prefix / middle_x / get_file_name(message)
+        url = str(link_prefix).strip("/") / middle_x / get_file_name(message)
         log.debug(f'Link to {message.id} in {message.chat_id}: {url}')
         return f'[{url}]({url})'
     else:
@@ -68,7 +68,7 @@ def get_url_by_message(message: Message, is_group: bool, is_channel: bool) -> ob
                 f"{message.chat_id}|{message.id}|{1 if is_group else 0}|{1 if is_channel else 0}")
             log.debug(f"{message.chat_id}|{message.id}|{1 if is_group else 0}|{1 if is_channel else 0}")
             # url = public_url / str(pack_id(evt)) / get_file_name(evt)
-            url = link_prefix / middle_x / get_file_name(message)
+            url = str(link_prefix).strip("/") / middle_x / get_file_name(message)
             log.debug(f'Link to {message.id} in {message.chat_id}: {url}')
             return f'[{url}]({url})'
         else:
@@ -106,7 +106,8 @@ async def handel_del(evt: events.NewMessage.Event) -> None:
                   f',reply_msg_from={reply_msg.from_id if reply_msg is not None else 0}')
 
         if c.from_id == evt.from_id or (c.from_id == me.id and c.chat_id == evt.from_id):
-            if (reply_msg is not None and reply_msg.from_id == evt.from_id) or reply_msg is None:
+            if (reply_msg is not None and (reply_msg.from_id == evt.from_id or reply_msg.from_id == me.id)) \
+                    or reply_msg is None:
                 await client.delete_messages(evt.input_chat, [evt.reply_to_msg_id])
         await evt.delete()
     else:
