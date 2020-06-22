@@ -3,6 +3,8 @@ import logging
 import sys
 import os
 import requests
+import signal
+import functools
 from aiohttp import web
 from apscheduler.schedulers.background import BackgroundScheduler
 from telethon import functions
@@ -65,6 +67,13 @@ def keep_wake():
     log.debug(f'keep_wake,get {str(keep_awake_url)},result={resp.status_code},{resp.content}')
 
 
+def signal_handler(name):
+    if os.path.isfile(f'{session}.pid'):
+        os.remove(f'{session}.pid')
+    print('signal_handler({!r})'.format(name))
+    sys.exit(0)
+
+
 try:
     pid = os.getpid()
     with open(f'{session}.pid', 'w') as f:
@@ -72,6 +81,11 @@ try:
     if keep_awake:
         scheduler.add_job(keep_wake, 'interval', seconds=120)
         scheduler.start()
+    if os.name != 'nt':
+        loop.add_signal_handler(
+            signal.SIGTERM,
+            functools.partial(signal_handler, name='SIGTERM'),
+        )
     loop.run_until_complete(start())
     loop.run_forever()
 except Exception as ep:

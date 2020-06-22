@@ -30,9 +30,11 @@ def get_url_by_event(evt: events.NewMessage.Event) -> object:
     if ret[0] and ret[1] and (ret[2] <= max_file_size or max_file_size == -1):
         middle_x = StringCoder.encode(
             f"{evt.chat_id}|{evt.id}|{1 if evt.is_group else 0}|{1 if evt.is_channel else 0}")
-        log.debug(f"{evt.chat_id}|{evt.id}|{1 if evt.is_group else 0}|{1 if evt.is_channel else 0}")
+        # log.debug(f"{evt.chat_id}|{evt.id}|{1 if evt.is_group else 0}|{1 if evt.is_channel else 0}")
+        temp_url = f"{link_prefix.strip('/')}/{middle_x}/{get_file_name(evt)}"
+        log.debug(temp_url)
         # url = public_url / str(pack_id(evt)) / get_file_name(evt)
-        url = link_prefix / middle_x / get_file_name(evt)
+        url = temp_url
         log.debug(f'Link to {evt.id} in {evt.chat_id}: {url}')
         return f'[{url}]({url})'
     else:
@@ -40,9 +42,11 @@ def get_url_by_event(evt: events.NewMessage.Event) -> object:
             log.debug('admin usage')
             middle_x = StringCoder.encode(
                 f"{evt.chat_id}|{evt.id}|{1 if evt.is_group else 0}|{1 if evt.is_channel else 0}")
-            log.debug(f"{evt.chat_id}|{evt.id}|{1 if evt.is_group else 0}|{1 if evt.is_channel else 0}")
+            # log.debug(f"{evt.chat_id}|{evt.id}|{1 if evt.is_group else 0}|{1 if evt.is_channel else 0}")
             # url = public_url / str(pack_id(evt)) / get_file_name(evt)
-            url = link_prefix / middle_x / get_file_name(evt)
+            temp_url = f"{link_prefix.strip('/')}/{middle_x}/{get_file_name(evt)}"
+            log.debug(temp_url)
+            url = temp_url
             log.debug(f'Link to {evt.id} in {evt.chat_id}: {url}')
             return f'[{url}]({url})'
         else:
@@ -56,9 +60,11 @@ def get_url_by_message(message: Message, is_group: bool, is_channel: bool) -> ob
     if ret[0] and ret[1] and (ret[2] <= max_file_size or max_file_size == -1):
         middle_x = StringCoder.encode(
             f"{message.chat_id}|{message.id}|{1 if is_group else 0}|{1 if is_channel else 0}")
-        log.debug(f"{message.chat_id}|{message.id}|{1 if is_group else 0}|{1 if is_channel else 0}")
+        # log.debug(f"{message.chat_id}|{message.id}|{1 if is_group else 0}|{1 if is_channel else 0}")
         # url = public_url / str(pack_id(evt)) / get_file_name(evt)
-        url = str(link_prefix).strip("/") / middle_x / get_file_name(message)
+        temp_url = f"{link_prefix.strip('/')}/{middle_x}/{get_file_name(message)}"
+        log.debug(temp_url)
+        url = temp_url
         log.debug(f'Link to {message.id} in {message.chat_id}: {url}')
         return f'[{url}]({url})'
     else:
@@ -66,9 +72,11 @@ def get_url_by_message(message: Message, is_group: bool, is_channel: bool) -> ob
             log.debug('admin usage')
             middle_x = StringCoder.encode(
                 f"{message.chat_id}|{message.id}|{1 if is_group else 0}|{1 if is_channel else 0}")
-            log.debug(f"{message.chat_id}|{message.id}|{1 if is_group else 0}|{1 if is_channel else 0}")
+            # log.debug(f"{message.chat_id}|{message.id}|{1 if is_group else 0}|{1 if is_channel else 0}")
             # url = public_url / str(pack_id(evt)) / get_file_name(evt)
-            url = str(link_prefix).strip("/") / middle_x / get_file_name(message)
+            temp_url = f"{link_prefix.strip('/')}/{middle_x}/{get_file_name(message)}"
+            log.debug(temp_url)
+            url = temp_url
             log.debug(f'Link to {message.id} in {message.chat_id}: {url}')
             return f'[{url}]({url})'
         else:
