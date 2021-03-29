@@ -16,7 +16,7 @@
 import asyncio
 import logging
 import math
-from contextlib import asynccontextmanager
+from async_generator import asynccontextmanager
 from dataclasses import dataclass
 from typing import Union, AsyncGenerator, AsyncContextManager, Dict, Optional, List
 
